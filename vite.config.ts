@@ -18,7 +18,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: './src/web-comp.ts',
+      entry: './src/web-comp.js',
       formats: ['es', 'cjs'],
       name: 'vue-web-comp',
       fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs')

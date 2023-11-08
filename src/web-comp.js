@@ -12,3 +12,5 @@ export function register(tagName = 'app') {
   app.use(vuetify)
   app.mount(`#${tagName}`)
 }
+
+window.register = register

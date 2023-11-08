@@ -14909,11 +14909,15 @@ const vuetify = createVuetify({
 });
 
 const ProductList = defineCustomElement(_sfc_main$1);
-function register(tagName = "app") {
+
+function register(tagName = 'app') {
+  // customElements.define(tagName, ProductList)
   const app = createApp(_sfc_main);
   app.use(vuetify);
   app.mount(`#${tagName}`);
 }
+
+window.register = register;
 
 export { ProductList, register };
 //# sourceMappingURL=index.js.map
