@@ -6,11 +6,11 @@ import vuetify from './plugins/vuetify'
 
 export const ProductList = defineCustomElement(VueProductList)
 
-export function register(tagName = 'product-list') {
-  customElements.define(tagName, ProductList)
-  const app = createApp(App)
+export function register(tagName = 'id', { rounded = 'xl' }) {
+  // customElements.define(tagName, ProductList)
+  const app = createApp(App, { rounded })
   app.use(vuetify)
-  app.mount('#app')
+  app.mount(`#${tagName}`)
 }
 
 window.register = register

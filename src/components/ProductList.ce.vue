@@ -1,8 +1,10 @@
 <script setup lang="ts">
 // import { defineComponent } from 'vue'
 // import vuetify from '../plugins/vuetify'
-// import { VContainer, VRow, VCol } from 'vuetify/components/VGrid'
+import { VContainer, VRow, VCol } from 'vuetify/components/VGrid'
 import ProductCard from './ProductCard.vue'
+
+defineProps<{ rounded: string }>()
 // export default {
 //   name: 'App',
 //   vuetify,
@@ -129,7 +131,7 @@ const items = [
     <v-container>
       <v-row>
         <v-col cols="4" v-for="item in items" :key="item.title">
-          <ProductCard :item="item" />
+          <ProductCard :item="item" :rounded="rounded" />
         </v-col>
       </v-row>
     </v-container>

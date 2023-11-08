@@ -15,13 +15,14 @@ defineProps<{
     garage: string
     size: string
   }
+  rounded: string
 }>()
 
 // import image from `@/assets/img/${props.img}`
 const dialog = ref(false)
 </script>
 <template>
-  <v-card rounded="xl" ripple @click="() => {}">
+  <v-card :rounded="rounded" ripple @click="() => {}">
     <v-img :src="`/src/assets/img/${item.img}`" class="rounded-xl"></v-img>
     <v-card-title>{{ item.title }}</v-card-title>
     <v-card-text class="d-flex align-center">
