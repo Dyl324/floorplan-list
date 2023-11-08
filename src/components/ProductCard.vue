@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VCard, VCardTitle, VCardText } from 'vuetify/components/VCard'
-import { VIcon } from 'vuetify/components/VIcon'
-import { VDialog } from 'vuetify/components/VDialog'
-import { VDivider } from 'vuetify/components/VDivider'
-import { VImg } from 'vuetify/components/VImg'
+// import { VCard, VCardTitle, VCardText } from 'vuetify/components/VCard'
+// import { VIcon } from 'vuetify/components/VIcon'
+// import { VDialog } from 'vuetify/components/VDialog'
+// import { VDivider } from 'vuetify/components/VDivider'
+// import { VImg } from 'vuetify/components/VImg'
 
 defineProps<{
   item: {

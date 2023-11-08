@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import { defineComponent } from 'vue'
 // import vuetify from '../plugins/vuetify'
-import { VContainer, VRow, VCol } from 'vuetify/components/VGrid'
+// import { VContainer, VRow, VCol } from 'vuetify/components/VGrid'
 import ProductCard from './ProductCard.vue'
 // export default {
 //   name: 'App',

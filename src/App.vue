@@ -4,7 +4,6 @@ import ProductList from './components/ProductList.ce.vue'
 
 <template>
   <div>
-    <!-- TEST -->
     <ProductList />
   </div>
 </template>
