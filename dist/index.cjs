@@ -8055,232 +8055,11 @@ function shouldSetAsProp(el, key, value, isSVG) {
   return key in el;
 }
 
-/*! #__NO_SIDE_EFFECTS__ */
-// @__NO_SIDE_EFFECTS__
-function defineCustomElement(options, hydrate2) {
-  const Comp = defineComponent$1(options);
-  class VueCustomElement extends VueElement {
-    constructor(initialProps) {
-      super(Comp, initialProps, hydrate2);
-    }
-  }
-  VueCustomElement.def = Comp;
-  return VueCustomElement;
-}
-const BaseClass = typeof HTMLElement !== "undefined" ? HTMLElement : class {
-};
-class VueElement extends BaseClass {
-  constructor(_def, _props = {}, hydrate2) {
-    super();
-    this._def = _def;
-    this._props = _props;
-    /**
-     * @internal
-     */
-    this._instance = null;
-    this._connected = false;
-    this._resolved = false;
-    this._numberProps = null;
-    this._ob = null;
-    if (this.shadowRoot && hydrate2) {
-      hydrate2(this._createVNode(), this.shadowRoot);
-    } else {
-      if (!!({}.NODE_ENV !== "production") && this.shadowRoot) {
-        warn(
-          `Custom element has pre-rendered declarative shadow root but is not defined as hydratable. Use \`defineSSRCustomElement\`.`
-        );
-      }
-      this.attachShadow({ mode: "open" });
-      if (!this._def.__asyncLoader) {
-        this._resolveProps(this._def);
-      }
-    }
-  }
-  connectedCallback() {
-    this._connected = true;
-    if (!this._instance) {
-      if (this._resolved) {
-        this._update();
-      } else {
-        this._resolveDef();
-      }
-    }
-  }
-  disconnectedCallback() {
-    this._connected = false;
-    if (this._ob) {
-      this._ob.disconnect();
-      this._ob = null;
-    }
-    nextTick(() => {
-      if (!this._connected) {
-        render(null, this.shadowRoot);
-        this._instance = null;
-      }
-    });
-  }
-  /**
-   * resolve inner component definition (handle possible async component)
-   */
-  _resolveDef() {
-    this._resolved = true;
-    for (let i = 0; i < this.attributes.length; i++) {
-      this._setAttr(this.attributes[i].name);
-    }
-    this._ob = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        this._setAttr(m.attributeName);
-      }
-    });
-    this._ob.observe(this, { attributes: true });
-    const resolve = (def, isAsync = false) => {
-      const { props, styles } = def;
-      let numberProps;
-      if (props && !isArray(props)) {
-        for (const key in props) {
-          const opt = props[key];
-          if (opt === Number || opt && opt.type === Number) {
-            if (key in this._props) {
-              this._props[key] = toNumber(this._props[key]);
-            }
-            (numberProps || (numberProps = /* @__PURE__ */ Object.create(null)))[camelize(key)] = true;
-          }
-        }
-      }
-      this._numberProps = numberProps;
-      if (isAsync) {
-        this._resolveProps(def);
-      }
-      this._applyStyles(styles);
-      this._update();
-    };
-    const asyncDef = this._def.__asyncLoader;
-    if (asyncDef) {
-      asyncDef().then((def) => resolve(def, true));
-    } else {
-      resolve(this._def);
-    }
-  }
-  _resolveProps(def) {
-    const { props } = def;
-    const declaredPropKeys = isArray(props) ? props : Object.keys(props || {});
-    for (const key of Object.keys(this)) {
-      if (key[0] !== "_" && declaredPropKeys.includes(key)) {
-        this._setProp(key, this[key], true, false);
-      }
-    }
-    for (const key of declaredPropKeys.map(camelize)) {
-      Object.defineProperty(this, key, {
-        get() {
-          return this._getProp(key);
-        },
-        set(val) {
-          this._setProp(key, val);
-        }
-      });
-    }
-  }
-  _setAttr(key) {
-    let value = this.getAttribute(key);
-    const camelKey = camelize(key);
-    if (this._numberProps && this._numberProps[camelKey]) {
-      value = toNumber(value);
-    }
-    this._setProp(camelKey, value, false);
-  }
-  /**
-   * @internal
-   */
-  _getProp(key) {
-    return this._props[key];
-  }
-  /**
-   * @internal
-   */
-  _setProp(key, val, shouldReflect = true, shouldUpdate = true) {
-    if (val !== this._props[key]) {
-      this._props[key] = val;
-      if (shouldUpdate && this._instance) {
-        this._update();
-      }
-      if (shouldReflect) {
-        if (val === true) {
-          this.setAttribute(hyphenate(key), "");
-        } else if (typeof val === "string" || typeof val === "number") {
-          this.setAttribute(hyphenate(key), val + "");
-        } else if (!val) {
-          this.removeAttribute(hyphenate(key));
-        }
-      }
-    }
-  }
-  _update() {
-    render(this._createVNode(), this.shadowRoot);
-  }
-  _createVNode() {
-    const vnode = createVNode(this._def, extend({}, this._props));
-    if (!this._instance) {
-      vnode.ce = (instance) => {
-        this._instance = instance;
-        instance.isCE = true;
-        if (!!({}.NODE_ENV !== "production")) {
-          instance.ceReload = (newStyles) => {
-            if (this._styles) {
-              this._styles.forEach((s) => this.shadowRoot.removeChild(s));
-              this._styles.length = 0;
-            }
-            this._applyStyles(newStyles);
-            this._instance = null;
-            this._update();
-          };
-        }
-        const dispatch = (event, args) => {
-          this.dispatchEvent(
-            new CustomEvent(event, {
-              detail: args
-            })
-          );
-        };
-        instance.emit = (event, ...args) => {
-          dispatch(event, args);
-          if (hyphenate(event) !== event) {
-            dispatch(hyphenate(event), args);
-          }
-        };
-        let parent = this;
-        while (parent = parent && (parent.parentNode || parent.host)) {
-          if (parent instanceof VueElement) {
-            instance.parent = parent._instance;
-            instance.provides = parent._instance.provides;
-            break;
-          }
-        }
-      };
-    }
-    return vnode;
-  }
-  _applyStyles(styles) {
-    if (styles) {
-      styles.forEach((css) => {
-        const s = document.createElement("style");
-        s.textContent = css;
-        this.shadowRoot.appendChild(s);
-        if (!!({}.NODE_ENV !== "production")) {
-          (this._styles || (this._styles = [])).push(s);
-        }
-      });
-    }
-  }
-}
-
 const rendererOptions = /* @__PURE__ */ extend({ patchProp }, nodeOps);
 let renderer;
 function ensureRenderer() {
   return renderer || (renderer = createRenderer(rendererOptions));
 }
-const render = (...args) => {
-  ensureRenderer().render(...args);
-};
 const createApp = (...args) => {
   const app = ensureRenderer().createApp(...args);
   if (!!({}.NODE_ENV !== "production")) {
@@ -14932,17 +14711,21 @@ const vuetify = createVuetify({
   }
 });
 
-const ProductList = defineCustomElement(_sfc_main$1);
+// import { defineCustomElement } from 'vue'
+// import VueProductList from './components/ProductList.ce.vue'
 
-function register(tagName = 'id', { rounded = 'xl' }) {
+// export const ProductList = defineCustomElement(VueProductList)
+
+function initFloorplans(tagName = 'floorplan-list', { rounded = 'xl' }) {
+  console.log('REGISTERING APP');
   // customElements.define(tagName, ProductList)
   const app = createApp(_sfc_main, { rounded });
   app.use(vuetify);
   app.mount(`#${tagName}`);
+  console.log('APP REGISTERED');
 }
 
-window.register = register;
+window.initFloorplans = initFloorplans;
 
-exports.ProductList = ProductList;
-exports.register = register;
+exports.initFloorplans = initFloorplans;
 //# sourceMappingURL=index.cjs.map
