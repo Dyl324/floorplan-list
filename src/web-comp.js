@@ -6,7 +6,7 @@ import vuetify from './plugins/vuetify'
 
 // export const ProductList = defineCustomElement(VueProductList)
 
-export function initFloorplans(tagName = 'floorplan-list', { rounded = 'xl' }) {
+function initFloorplans(tagName = 'floorplan-list', { rounded = 'xl' }) {
   console.log('REGISTERING APP')
   // customElements.define(tagName, ProductList)
   const app = createApp(App, { rounded })

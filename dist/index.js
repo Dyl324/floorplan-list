@@ -14722,6 +14722,4 @@ function initFloorplans(tagName = 'floorplan-list', { rounded = 'xl' }) {
 }
 
 window.initFloorplans = initFloorplans;
-
-export { initFloorplans };
 //# sourceMappingURL=index.js.map

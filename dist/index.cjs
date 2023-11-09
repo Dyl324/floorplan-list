@@ -1,7 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-
 function makeMap(str, expectsLowerCase) {
   const map = /* @__PURE__ */ Object.create(null);
   const list = str.split(",");
@@ -14726,6 +14724,4 @@ function initFloorplans(tagName = 'floorplan-list', { rounded = 'xl' }) {
 }
 
 window.initFloorplans = initFloorplans;
-
-exports.initFloorplans = initFloorplans;
 //# sourceMappingURL=index.cjs.map
